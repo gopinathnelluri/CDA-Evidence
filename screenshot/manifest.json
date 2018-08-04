@@ -1,0 +1,99 @@
+{
+  "background": {
+    "page": "background.html"
+  },
+  "browser_action": {
+    "default_icon": {
+      "128": "images/icons/128x128.png",
+      "48": "images/icons/48x48.png",
+      "16": "images/icons/16x16.png"
+    },
+    "default_popup": "app/index.html#popup",
+    "default_title": "CDA Evidence ScreenShot"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "js/hotkeys.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "commands": {
+    "start_tab_video": {
+      "description": "Start record tab/page",
+      "suggested_key": {
+        "default": "Ctrl+Shift+7",
+        "mac": "Command+Shift+7"
+      }
+    },
+    "start_desktop_video": {
+      "description": "Start record desktop",
+      "suggested_key": {
+        "default": "Ctrl+Shift+8",
+        "mac": "Command+Shift+8"
+      }
+    },
+    "stop_video": {
+      "description": "Stop video recording",
+      "suggested_key": {
+        "default": "Ctrl+Shift+9",
+        "mac": "Command+Shift+9"
+      }
+    },
+    "pause_video": {
+      "description": "Pause video recording",
+      "suggested_key": {
+        "default": "Ctrl+Shift+0",
+        "mac": "Command+Shift+0"
+      }
+    }
+  },
+  "description": "This application is designed to capture screenshots as evidance as part of CDA application process.",
+  "homepage_url": "https://gopinath.us",
+  "short_name": "cda evidance screenshots",
+  "icons": {
+    "128": "images/icons/128x128.png",
+    "48": "images/icons/48x48.png",
+    "16": "images/icons/16x16.png"
+  },
+  "manifest_version": 2,
+  "minimum_chrome_version": "43",
+  "name": "CDA Evidance Screenshots",
+  "offline_enabled": true,
+  "options_page": "app/index.html",
+  "incognito": "spanning",
+  "permissions": [
+    "*://*/*",
+    "cookies",
+    "<all_urls>",
+    "downloads",
+    "clipboardWrite",
+    "clipboardRead",
+    "tabs",
+    "activeTab",
+    "storage",
+    "unlimitedStorage",
+    "contextMenus",
+    "identity",
+    "desktopCapture",
+    "tabCapture"
+  ],
+  "update_url": "http://clients2.google.com/service/update2/crx",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "version": "1.0.0",
+  "web_accessible_resources": [
+    "favicon.png",
+    "print.html",
+    "video.html",
+    "media_access/*",
+    "fonts/*",
+    "images/*",
+    "app/*",
+    "css/*",
+    "template/*"
+  ]
+}
