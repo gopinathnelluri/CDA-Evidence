@@ -87,7 +87,6 @@ var screenShot = {
         let url = document.createElement('a');
         url.href = info.url || '';
         s = s.replace(/\{url}/, info.url || '')
-            .replace(/\{title}/, info.title || '')
             .replace(/\{case}/, '1234')
             .replace(/\{timestamp}/, +new Date() || '');
 
