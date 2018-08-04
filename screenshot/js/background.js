@@ -89,7 +89,6 @@ var screenShot = {
         s = s.replace(/\{url}/, info.url || '')
             .replace(/\{title}/, info.title || '')
             .replace(/\{case}/, '1234')
-            .replace(/\{domain}/, url.host || '')
             .replace(/\{timestamp}/, +new Date() || '');
 
         return s.replace(/[\*\|\\\:\"\<\>\?\/#]+/ig, '-') + ('.' + f);
