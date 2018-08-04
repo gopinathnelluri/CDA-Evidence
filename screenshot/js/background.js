@@ -74,10 +74,24 @@ var screenShot = {
             canvas.getContext('2d').drawImage(screen, 0, 0);
             chrome.downloads.download({
                 url: canvas.toDataURL('image/' + (localStorage.format === 'jpg' ? 'jpeg' : 'png'), localStorage.imageQuality / 100),
-                filename: "test",//screenShot.getFileName(),
+                filename: screenShot.getFileName(),
                 saveAs: localStorage.enableSaveAs !== 'false'
             });
         };
         screen.src = localStorage.filePatch;
+    },
+    getFileName: function () {
+        let s = "{case}_{timestamp}";//localStorage.fileNamePatternScreenshot;
+        let f = (localStorage.format === 'jpg' ? 'jpeg' : 'png');
+        let info = JSON.parse(localStorage.pageinfo || '{}');
+        let url = document.createElement('a');
+        url.href = info.url || '';
+        s = s.replace(/\{url}/, info.url || '')
+            .replace(/\{title}/, info.title || '')
+            .replace(/\{case}/, '1234')
+            .replace(/\{domain}/, url.host || '')
+            .replace(/\{timestamp}/, +new Date() || '');
+
+        return s.replace(/[\*\|\\\:\"\<\>\?\/#]+/ig, '-') + ('.' + f);
     }
 }
