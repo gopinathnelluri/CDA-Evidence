@@ -29,7 +29,7 @@ var screenShot = {
                             //canvas = downScaleCanvas(canvas, 1 / (window.devicePixelRatio || 1));
 
                             screenShot.createBlob(canvas, function () {
-                                screenShot.createEditPage('save');
+                                screenShot.createEditPage('edit');
                             });
                         };
                         image.src = img;
@@ -60,7 +60,7 @@ var screenShot = {
             case 'done':
             default:
                 //screenShot.setScreenName();
-                chrome.tabs.create({ url: 'app/#/popup?' + ((option === 'edit' || !option) ? '' : ('?' + option)) });
+                chrome.tabs.create({ url: 'app/index.html#edit?' + ((option === 'edit' || !option) ? '' : ('?' + option)) });
                 break;
         }
     },

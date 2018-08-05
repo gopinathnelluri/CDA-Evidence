@@ -11,7 +11,7 @@ export class PopupComponent implements OnInit {
   //extension:any = chrome.extension;
   
   
-  background:any = chrome.extension.getBackgroundPage();
+  //background:any = chrome.extension.getBackgroundPage();
   //sendMessage:any = this.background.sendMessage;
   
   constructor() {
@@ -19,7 +19,7 @@ export class PopupComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(chrome,"\n============\n",this.background);
+    //console.log(chrome,"\n============\n",this.background);
   }
 
   captureVisiblePart(){
