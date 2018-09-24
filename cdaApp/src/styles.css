@@ -17,3 +17,15 @@ body{
 .tui-image-editor-header{
     background-color: #282828!important;
 }*/
+
+.tui-image-editor-container .tui-image-editor-controls-logo > img, .tui-image-editor-container .tui-image-editor-header-logo > img {
+    width: 459px!important;
+    height: 45px!important;
+    position: relative;
+    top: -9px;
+    left: -29px;
+}
+
+body .ui-widget-content{
+    border:0px;
+}

@@ -23,38 +23,31 @@
     }
   ],
   "commands": {
-    "start_tab_video": {
-      "description": "Start record tab/page",
+    "take_screen_shot_edit": {
+      "description": "ScreenShot and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+7",
-        "mac": "Command+Shift+7"
+        "default": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2"
       }
     },
-    "start_desktop_video": {
-      "description": "Start record desktop",
+    "take_screen_shot_upload": {
+      "description": "ScreenShot and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+8",
-        "mac": "Command+Shift+8"
+        "default": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1"
       }
     },
-    "stop_video": {
-      "description": "Stop video recording",
+    "capture_window_and_edit": {
+      "description": "Capture Window and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+9",
-        "mac": "Command+Shift+9"
-      }
-    },
-    "pause_video": {
-      "description": "Pause video recording",
-      "suggested_key": {
-        "default": "Ctrl+Shift+0",
-        "mac": "Command+Shift+0"
+        "default": "Ctrl+Shift+3",
+        "mac": "Command+Shift+3"
       }
     }
   },
-  "description": "This application is designed to capture screenshots as evidance as part of CDA application process.",
+  "description": "This application is designed to capture screenshots as evidence as part of CDA application process.",
   "homepage_url": "https://gopinath.us",
-  "short_name": "cda evidance screenshots",
+  "short_name": "cda evidence screenshots",
   "icons": {
     "128": "images/icons/128x128.png",
     "48": "images/icons/48x48.png",
@@ -62,7 +55,7 @@
   },
   "manifest_version": 2,
   "minimum_chrome_version": "43",
-  "name": "CDA Evidance Screenshots",
+  "name": "CDA Evidence Screenshots",
   "offline_enabled": true,
   "options_page": "app/index.html",
   "incognito": "spanning",
@@ -85,6 +78,9 @@
   "update_url": "http://clients2.google.com/service/update2/crx",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "version": "1.0.0",
+  "externally_connectable": {
+    "matches": ["*://*/*"]
+  },
   "web_accessible_resources": [
     "favicon.png",
     "print.html",

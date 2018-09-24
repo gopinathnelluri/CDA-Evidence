@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 //var ImageEditor = require('tui-image-editor');
 //var blackTheme = require('./js/theme/black-theme.js');
 //import {ImageEditor} from 'tui-image-editor';
@@ -15,15 +16,18 @@ declare var whiteTheme:any;
 })
 export class EditComponent implements OnInit {
 
+  patch: any;
   
-
-  constructor() { }
+  constructor(private route: ActivatedRoute) { 
+   
+  }
 
   ngOnInit() {
+    this.patch = localStorage.patch ? localStorage.patch : 'https://uh8yh30l48rpize52xh0q1o6i-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/header-image-photo-rights.png';
     var imageEditor = new tui.ImageEditor('#tui-image-editor-container', {
       includeUI: {
           loadImage: {
-              path: 'https://uh8yh30l48rpize52xh0q1o6i-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/header-image-photo-rights.png',
+              path: this.patch,
               name: 'SampleImage'
           },
           theme: blackTheme, // or whiteTheme
@@ -40,7 +44,21 @@ export class EditComponent implements OnInit {
       }
     });
 
+
+    this.addUploadButton();
  
   }
 
+  addUploadButton(){
+    let uploadButton = '<button id="uploadButton" (click)="uploadClicked()" class="tui-image-editor-download-btn" style="background-color: #5286ee;border: 1px solid #5286ee;color: #fff;font-family: NotoSans, sans-serif;font-size: 12px">Upload</button>';
+    document.getElementsByClassName("tui-image-editor-header-buttons")[0].innerHTML += uploadButton;
+    document.getElementById("uploadButton").addEventListener('click', function() {
+      alert("CDA Evidence uploaded");
+      window.close();
+    });
+  }
+
+  uploadClicked(){
+    alert("uploaded");
+  }
 }

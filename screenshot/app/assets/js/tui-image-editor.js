@@ -5903,7 +5903,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @example
 	 // default keys and styles
 	 var customTheme = {
-	    'common.bi.image': 'https://uicdn.toast.com/toastui/img/tui-image-editor-bi.png',
+	    'common.bi.image': 'assets/img/citiCDA.png',
 	    'common.bisize.width': '251px',
 	    'common.bisize.height': '21px',
 	    'common.backgroundImage': 'none',
@@ -5977,7 +5977,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	 */
 	exports.default = {
-	  'common.bi.image': 'https://uicdn.toast.com/toastui/img/tui-image-editor-bi.png',
+	  'common.bi.image': 'assets/img/citiCDA.png',
 	  'common.bisize.width': '251px',
 	  'common.bisize.height': '21px',
 	  'common.backgroundImage': 'none',

@@ -1,7 +1,178 @@
 <div class="popup-window">
-  <p-card title="Screen Capture Options">
+  <p-card title="CDA: Capture Evidence">
+    <!--
     <div>
-      <button pButton type="button" (click)="captureVisiblePart()" icon="pi pi-check" label="Visible Part of Page"></button>
+      <button pButton type="button" (click)="captureVisiblePartAndUpload()" icon="pi pi-check" label="ScreenShot + Upload"></button>
+      <ul id="keys-freebie">
+        <li>
+          <div class="key special">
+            <span>
+              ctrl
+            </span>
+          </div>
+        </li>
+        <li class="concat_symbol">+</li>
+        <li>
+          <div class="key special">
+            <span>
+              shift
+            </span>
+          </div>
+        </li>
+        <li class="concat_symbol">+</li>
+        <li>
+          <div class="key">
+            <span>
+              1
+            </span>
+          </div>
+        </li>
+      </ul>
     </div>
+    <div>
+      <button pButton type="button" (click)="captureVisiblePartAndEdit()" icon="pi pi-check" label="ScreenShot + Edit"></button>
+      <ul id="keys-freebie">
+        <li>
+          <div class="key special">
+            <span>
+              ctrl
+            </span>
+          </div>
+        </li>
+        <li class="concat_symbol">+</li>
+        <li>
+          <div class="key special">
+            <span>
+              shift
+            </span>
+          </div>
+        </li>
+        <li class="concat_symbol">+</li>
+        <li>
+          <div class="key">
+            <span>
+              2
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+    -->
+    <table>
+      <tr>
+        <td>
+          <button class="cutom-buttons" pButton type="button" (click)="captureVisiblePartAndUpload()" icon="pi pi-upload" label="ScreenShot + Upload"></button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <ul id="keys-freebie">
+            <li>
+              <div class="key special">
+                <span>
+                  ctrl
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key special">
+                <span>
+                  shift
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key">
+                <span>
+                  1
+                </span>
+              </div>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <br/>
+          <br/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button class="cutom-buttons" pButton type="button" (click)="captureVisiblePartAndEdit()" icon="pi pi-pencil" label="ScreenShot + Edit"></button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <ul id="keys-freebie">
+            <li>
+              <div class="key special">
+                <span>
+                  ctrl
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key special">
+                <span>
+                  shift
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key">
+                <span>
+                  2
+                </span>
+              </div>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <br/>
+          <br/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button class="cutom-buttons" pButton type="button" (click)="captureWindowAndEdit()" icon="pi pi-pencil" label="Capture Window + Edit"></button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <ul id="keys-freebie">
+            <li>
+              <div class="key special">
+                <span>
+                  ctrl
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key special">
+                <span>
+                  shift
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key">
+                <span>
+                  3
+                </span>
+              </div>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </table>
   </p-card>
 </div>

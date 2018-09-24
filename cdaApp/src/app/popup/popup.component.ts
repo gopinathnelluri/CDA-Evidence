@@ -6,30 +6,54 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./popup.component.css']
 })
 export class PopupComponent implements OnInit {
-
-  //background = chrome.extension.getBackgroundPage();
-  //extension:any = chrome.extension;
-  
-  
-  //background:any = chrome.extension.getBackgroundPage();
-  //sendMessage:any = this.background.sendMessage;
   
   constructor() {
     
   }
 
   ngOnInit() {
-    //console.log(chrome,"\n============\n",this.background);
+   
   }
 
   captureVisiblePart(){
     (<any>chrome.extension).sendMessage({function: "captureVisible"}, function(response) {
       if(response.success){
-        console.log("hey");
+        console.log("captureVisible");
       }
     });
-    //this.sendMessage();
-    //this.screenshot.captureVisible();
+  }
+
+  captureVisiblePartAndEdit(){
+    (<any>chrome.extension).sendMessage({function: "captureVisiblePartAndEdit"}, function(response) {
+      if(response.success){
+        console.log("captureVisiblePartAndEdit");
+      }
+    });
+  }
+
+  captureWindowAndEdit(){
+    (<any>chrome.extension).sendMessage({function: "captureWindowAndEdit"}, function(response) {
+      console.log(response);
+      if(response.success){
+        console.log("captureWindowAndEdit");
+      }
+    });
+  }
+
+  captureVisiblePartAndUpload(){
+    (<any>chrome.extension).sendMessage({function: "captureVisiblePartAndUpload"}, function(response) {
+      if(response.success){
+        console.log("captureVisiblePartAndUpload");
+      }
+    });
+  }
+
+  captureFullPage(){
+    (<any>chrome.extension).sendMessage({function: "captureFullPage"}, function(response) {
+      if(response.success){
+        console.log("captureFullPage");
+      }
+    });
   }
 
 }
