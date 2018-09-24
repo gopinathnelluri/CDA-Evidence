@@ -25,10 +25,14 @@ chrome.runtime.onMessage.addListener(
         } else if (request.function == "captureFullPage") {
             screenShot.captureFullPage();
             sendResponse({ success: true });
-        }
+        } else if (request.function == "uploadToImageFromEditor") {
+            screenShot.uploadToImageFromEditor();
+            sendResponse({ success: true });
+        } 
 });
 
 var screenShot = {
+    citiCDAurl: "localhost:4200",
     captureVisible: function () {
         chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
             chrome.tabs.executeScript(tabs[0].id, { file: "js/screenshot/captureVisible.js" }, function () {
@@ -65,6 +69,9 @@ var screenShot = {
 
     captureVisiblePartAndUpload: function () {
         chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (img) {
+            
+            screenShot.submitToCDA(img);
+            /*
             localStorage.setItem('uploadImage', img);
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
                 chrome.tabs.query({ }, function (allTabsList) {
@@ -81,27 +88,60 @@ var screenShot = {
                                 })
                             });
                            
-
-                            /*
+                            
                             chrome.tabs.sendMessage(allTabs[i].id, {greeting: "hello"}, function(response) {
                                 console.log(response.farewell);
-                            });*/
+                            });
                         }
                     }
                 })
+                
                 tab = tabs[0];
                 chrome.tabs.executeScript(tab.id, {file: "js/screenshot/uploadImage.js"}, function () {
                     chrome.tabs.executeScript(tab.id, { code: "uploadImageNow('"+img+"')" }, function (response) {
                     })
                 })
+                
             })
+            */
         });
+    },
+
+    uploadToImageFromEditor: function(){
+        var img  = localStorage.uploadToImageFromEditor;
+        if(img){
+            screenShot.submitToCDA(img);
+        }
+    },
+
+    submitToCDA: function(img){
+        chrome.tabs.query({ }, function (allTabsList) {
+            let allTabs = allTabsList;
+            console.log("tabs",allTabs);
+            
+            for(var i = 0;i < allTabs.length;++i){
+                if(allTabs[i].url.includes(screenShot.citiCDAurl)){
+                    console.log("main tab",allTabs[i]);
+                    chrome.tabs.update(allTabs[i].id, {highlighted: true, active: true}, (tab) => {
+                        chrome.tabs.executeScript(tab.id, {file: "js/screenshot/submitImage.js"}, function (tab) {
+                            chrome.tabs.executeScript(tab.id, { code: "submitImageNow('"+img+"')" }, function (response) {
+                            })
+                        })
+                    });
+                   
+                    /*
+                    chrome.tabs.sendMessage(allTabs[i].id, {greeting: "hello"}, function(response) {
+                        console.log(response.farewell);
+                    });*/
+                }
+            }
+        })
     },
 
     captureWindowAndEdit: function () {
         screenShot.captureDesktop(function (canvas) {
             screenShot.createBlob(canvas, function () {
-                console.log(canvas.toDataURL());
+                //console.log(canvas.toDataURL());
                 screenShot.createEditPage('edit', canvas.toDataURL());
             });
         });

@@ -29,3 +29,15 @@ body{
 body .ui-widget-content{
     border:0px;
 }
+
+.tui-image-editor-container .color-picker-control .tui-colorpicker-palette-button {
+    width: 16px;
+}
+
+ul.tui-colorpicker-clearfix > li{
+    float:left;
+}
+
+span.tui-colorpicker-palette-preview {
+    overflow: hidden;
+}

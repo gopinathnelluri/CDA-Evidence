@@ -44,21 +44,34 @@ export class EditComponent implements OnInit {
       }
     });
 
-
     this.addUploadButton();
  
   }
 
   addUploadButton(){
-    let uploadButton = '<button id="uploadButton" (click)="uploadClicked()" class="tui-image-editor-download-btn" style="background-color: #5286ee;border: 1px solid #5286ee;color: #fff;font-family: NotoSans, sans-serif;font-size: 12px">Upload</button>';
+    let uploadButton = '<button id="uploadButton" class="tui-image-editor-download-btn" style="background-color: #5286ee;border: 1px solid #5286ee;color: #fff;font-family: NotoSans, sans-serif;font-size: 12px">Upload</button>';
     document.getElementsByClassName("tui-image-editor-header-buttons")[0].innerHTML += uploadButton;
     document.getElementById("uploadButton").addEventListener('click', function() {
-      alert("CDA Evidence uploaded");
-      window.close();
-    });
+      //alert("CDA Evidence uploaded");
+      this.uploadClicked();
+    }.bind(this));
   }
 
   uploadClicked(){
-    alert("uploaded");
+    console.log("hello");
+    var imageElement;
+    imageElement = document.getElementsByClassName("lower-canvas")[0];
+    if(imageElement){
+      var img = imageElement.toDataURL();
+        console.log("hello2",img);
+        localStorage.setItem('uploadToImageFromEditor', img);
+        (<any>chrome.extension).sendMessage({function: "uploadToImageFromEditor"}, function(response) {
+          if(response.success){
+            console.log("uploadToImageFromEditor");
+            window.close();
+          }
+        });
+      
+    }
   }
 }
