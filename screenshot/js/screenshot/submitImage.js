@@ -1,4 +1,5 @@
-function submitImageNow(img){
+function submitImageNow(img, meta){
+    console.log(meta);
     var div = document.createElement('div');
 
     div.className = 'upload-message-container';
@@ -24,7 +25,7 @@ function submitImageNow(img){
     document.getElementById("cda-evidence-image").src = img;
 
     
-    prepareBlob(img,div);
+    prepareBlob(img, div, meta);
     /*
     setTimeout( () => {
         document.getElementById("cda-upload-message").innerText = "Upload Complted!";
@@ -35,7 +36,7 @@ function submitImageNow(img){
     */
 }
 
-function prepareBlob(img,div){
+function prepareBlob(img, div, meta){
     let image = new Image();
     image.src = img;
     image.onload = function () {
@@ -45,14 +46,20 @@ function prepareBlob(img,div){
         canvas.height = image.naturalHeight;
         ctx.drawImage(image, 0, 0);
         canvas.toBlob((blob) => {
-            post(blob,div)
+            post(blob, div, meta)
         })
     };   
 }
 
-function post(blob,div){
+function post(blob, div, meta){
+    var metaData = JSON.parse(meta);
+
+    metaData["upload_timestamp"] = +new Date();
+    metaData = JSON.stringify(metaData);
+    console.log(metaData);
     var data = new FormData();
     data.append("image", blob, "image123.png");
+    data.append("meta", metaData);
     data.append("submit", "done");
 
     var xhr = new XMLHttpRequest();

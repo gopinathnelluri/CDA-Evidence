@@ -40,6 +40,15 @@ export class PopupComponent implements OnInit {
     });
   }
 
+  captureWindowAndUpload(){
+    (<any>chrome.extension).sendMessage({function: "captureWindowAndUpload"}, function(response) {
+      console.log(response);
+      if(response.success){
+        console.log("captureWindowAndUpload");
+      }
+    });
+  }
+
   captureVisiblePartAndUpload(){
     (<any>chrome.extension).sendMessage({function: "captureVisiblePartAndUpload"}, function(response) {
       if(response.success){

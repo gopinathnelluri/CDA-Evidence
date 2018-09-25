@@ -23,6 +23,13 @@
     }
   ],
   "commands": {
+    "take_screen_shot_upload": {
+      "description": "ScreenShot and Upload",
+      "suggested_key": {
+        "default": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1"
+      }
+    },
     "take_screen_shot_edit": {
       "description": "ScreenShot and Edit",
       "suggested_key": {
@@ -30,18 +37,18 @@
         "mac": "Command+Shift+2"
       }
     },
-    "take_screen_shot_upload": {
-      "description": "ScreenShot and Edit",
+    "capture_window_and_upload": {
+      "description": "Capture Window and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+1",
-        "mac": "Command+Shift+1"
+        "default": "Ctrl+Shift+3",
+        "mac": "Command+Shift+3"
       }
     },
     "capture_window_and_edit": {
       "description": "Capture Window and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+3",
-        "mac": "Command+Shift+3"
+        "default": "Ctrl+Shift+4",
+        "mac": "Command+Shift+4"
       }
     }
   },

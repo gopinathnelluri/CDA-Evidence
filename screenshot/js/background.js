@@ -1,11 +1,13 @@
 chrome.commands.onCommand.addListener(function(command) {
-    if(command == "take_screen_shot_edit"){
+    if(command == "take_screen_shot_upload"){
+        screenShot.captureVisiblePartAndUpload();
+    } else if(command == "take_screen_shot_edit"){
         screenShot.captureVisiblePartAndEdit();
+    } else if(command == "capture_window_and_upload"){
+        screenShot.captureWindowAndUpload();
     } else if(command == "capture_window_and_edit"){
         screenShot.captureWindowAndEdit();
-    } else if(command == "take_screen_shot_upload"){
-        screenShot.captureVisiblePartAndUpload();
-    } 
+    }
 });
 
 chrome.runtime.onMessage.addListener(
@@ -18,6 +20,9 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ success: true });
         } else if (request.function == "captureWindowAndEdit") {
             screenShot.captureWindowAndEdit();
+            sendResponse({ success: true });
+        } else if (request.function == "captureWindowAndUpload") {
+            screenShot.captureWindowAndUpload();
             sendResponse({ success: true });
         } else if (request.function == "captureVisiblePartAndUpload") {
             screenShot.captureVisiblePartAndUpload();
@@ -49,7 +54,6 @@ var screenShot = {
 
 
                             screenShot.createBlob(canvas, function (patch, blob) {
-                                console.log(patch, blob);
                                 screenShot.createEditPage('edit', patch);
                             });
                         };
@@ -63,58 +67,34 @@ var screenShot = {
 
     captureVisiblePartAndEdit: function () {
         chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (img) {
-            screenShot.createEditPage('edit', img);
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
+                tabs[0]["screenshot_timestamp"] = +new Date();
+                localStorage.setItem("metaData",JSON.stringify(tabs[0]))
+                screenShot.createEditPage('edit', img);
+            })
         });
     },
 
     captureVisiblePartAndUpload: function () {
         chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (img) {
-            
-            screenShot.submitToCDA(img);
-            /*
-            localStorage.setItem('uploadImage', img);
+             
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
-                chrome.tabs.query({ }, function (allTabsList) {
-                    let allTabs = allTabsList;
-                    console.log("tabs",allTabs);
-                    
-                    for(var i = 0;i < allTabs.length;++i){
-                        if(allTabs[i].url.includes("localhost:4200")){
-                            console.log("main tab",allTabs[i]);
-                            chrome.tabs.update(allTabs[i].id, {highlighted: true, active: true}, (tab) => {
-                                chrome.tabs.executeScript(tab.id, {file: "js/screenshot/submitImage.js"}, function (tab) {
-                                    chrome.tabs.executeScript(tab.id, { code: "submitImageNow('"+img+"')" }, function (response) {
-                                    })
-                                })
-                            });
-                           
-                            
-                            chrome.tabs.sendMessage(allTabs[i].id, {greeting: "hello"}, function(response) {
-                                console.log(response.farewell);
-                            });
-                        }
-                    }
-                })
-                
-                tab = tabs[0];
-                chrome.tabs.executeScript(tab.id, {file: "js/screenshot/uploadImage.js"}, function () {
-                    chrome.tabs.executeScript(tab.id, { code: "uploadImageNow('"+img+"')" }, function (response) {
-                    })
-                })
-                
+                tabs[0]["screenshot_timestamp"] = +new Date();
+                screenShot.submitToCDA(img, JSON.stringify(tabs[0]));
             })
-            */
+    
         });
     },
 
     uploadToImageFromEditor: function(){
         var img  = localStorage.uploadToImageFromEditor;
+        var meta  = localStorage.metaData;
         if(img){
-            screenShot.submitToCDA(img);
+            screenShot.submitToCDA(img, meta);
         }
     },
 
-    submitToCDA: function(img){
+    submitToCDA: function(img, meta){
         chrome.tabs.query({ }, function (allTabsList) {
             let allTabs = allTabsList;
             console.log("tabs",allTabs);
@@ -124,7 +104,7 @@ var screenShot = {
                     console.log("main tab",allTabs[i]);
                     chrome.tabs.update(allTabs[i].id, {highlighted: true, active: true}, (tab) => {
                         chrome.tabs.executeScript(tab.id, {file: "js/screenshot/submitImage.js"}, function (tab) {
-                            chrome.tabs.executeScript(tab.id, { code: "submitImageNow('"+img+"')" }, function (response) {
+                            chrome.tabs.executeScript(tab.id, { code: "submitImageNow('"+img+"','"+meta+"')" }, function (response) {
                             })
                         })
                     });
@@ -138,17 +118,30 @@ var screenShot = {
         })
     },
 
+    captureWindowAndUpload: function () {
+        screenShot.captureDesktop(function (canvas,meta) {
+            screenShot.createBlob(canvas, function () {
+                meta["screenshot_timestamp"] = +new Date();
+                var metaData = JSON.stringify(meta);
+                screenShot.submitToCDA(canvas.toDataURL(), metaData);
+            });
+        });
+    },
+
     captureWindowAndEdit: function () {
-        screenShot.captureDesktop(function (canvas) {
+        screenShot.captureDesktop(function (canvas,meta) {
             screenShot.createBlob(canvas, function () {
                 //console.log(canvas.toDataURL());
+                meta["screenshot_timestamp"] = +new Date();
+                var metaData = JSON.stringify(meta);
+                localStorage.setItem("metaData", metaData);
                 screenShot.createEditPage('edit', canvas.toDataURL());
             });
         });
     },
 
     captureDesktop: function (cb) {
-        chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], function (streamId) {
+        chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], function (streamId, options) {
             window.navigator.webkitGetUserMedia({
                 audio: false,
                 video: {
@@ -172,7 +165,7 @@ var screenShot = {
                     this.pause();
                     this.remove();
                     canvas.remove();
-                    cb && cb(canvas);
+                    cb && cb(canvas,options);
                 }, false);
                 video.src = window.URL.createObjectURL(stream);
                 video.play();
@@ -198,7 +191,6 @@ var screenShot = {
             //});
 
             chrome.tabs.executeScript(tab.id, { code: "var x = {windowWidth: window.innerWidth, windowHeight: window.innerHeight, documentWidth: document.body.clientWidth, documentHeight: document.body.clientHeight}; x" }, function (response) {
-                console.log(response);
                 if (response && response[0]) {
                     let windowWidth = response[0].windowWidth;
                     let windowHeight = response[0].windowHeight;
@@ -229,8 +221,7 @@ var screenShot = {
                                             myCanvas.width = img.naturalWidth;
                                             myCanvas.height = img.naturalHeight;
                                             ctx.drawImage(img,0,0);
-                                            console.log(dataURI)
-                                            console.log(myCanvas.toDataURL());
+                                            
                                         }
                                         
                                         
@@ -417,7 +408,6 @@ var screenShot = {
         }, 'image/' + (localStorage.format === 'jpg' ? 'jpeg' : 'png'), localStorage.imageQuality / 100);
     },
     createEditPage: function (params, image) {
-        console.log(image)
         localStorage.setItem('patch', image)
         let option = params || localStorage.enableEdit;
         switch (option) {
