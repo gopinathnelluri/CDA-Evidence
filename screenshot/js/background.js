@@ -1,12 +1,14 @@
-chrome.commands.onCommand.addListener(function(command) {
-    if(command == "take_screen_shot_upload"){
+chrome.commands.onCommand.addListener(function (command) {
+    if (command == "take_screen_shot_upload") {
         screenShot.captureVisiblePartAndUpload();
-    } else if(command == "take_screen_shot_edit"){
+    } else if (command == "take_screen_shot_edit") {
         screenShot.captureVisiblePartAndEdit();
-    } else if(command == "capture_window_and_upload"){
+    } else if (command == "capture_window_and_upload") {
         screenShot.captureWindowAndUpload();
-    } else if(command == "capture_window_and_edit"){
+    } else if (command == "capture_window_and_edit") {
         screenShot.captureWindowAndEdit();
+    } else if (command == "capture_full_page_and_upload") {
+        screenShot.captureFullPageAndUpload();
     }
 });
 
@@ -33,11 +35,20 @@ chrome.runtime.onMessage.addListener(
         } else if (request.function == "uploadToImageFromEditor") {
             screenShot.uploadToImageFromEditor();
             sendResponse({ success: true });
-        } 
-});
+        } else if (request.function == "captureFullPageAndUpload") {
+            screenShot.captureFullPageAndUpload();
+            sendResponse({ success: true });
+        }
+    });
 
 var screenShot = {
-    citiCDAurl: "localhost:4200",
+    citiCDAurl: function () {
+        if (localStorage.iframeMode == "true") {
+            return "localhost:8080/cda";
+        } else {
+            return "localhost:4200";
+        }
+    },
     captureVisible: function () {
         chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
             chrome.tabs.executeScript(tabs[0].id, { file: "js/screenshot/captureVisible.js" }, function () {
@@ -69,7 +80,7 @@ var screenShot = {
         chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (img) {
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
                 tabs[0]["screenshot_timestamp"] = +new Date();
-                localStorage.setItem("metaData",JSON.stringify(tabs[0]))
+                localStorage.setItem("metaData", JSON.stringify(tabs[0]))
                 screenShot.createEditPage('edit', img);
             })
         });
@@ -77,38 +88,141 @@ var screenShot = {
 
     captureVisiblePartAndUpload: function () {
         chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (img) {
-             
+
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
                 tabs[0]["screenshot_timestamp"] = +new Date();
                 screenShot.submitToCDA(img, JSON.stringify(tabs[0]));
             })
-    
+
         });
     },
 
-    uploadToImageFromEditor: function(){
-        var img  = localStorage.uploadToImageFromEditor;
-        var meta  = localStorage.metaData;
-        if(img){
+    captureFullPageAndUpload: function () {
+
+        chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
+            tab = tabs[0];
+            console.log(tab);
+            chrome.tabs.insertCSS(tab.id, { file: "css/hideFixedElements.css" }, function () {
+                chrome.tabs.executeScript(tab.id, { file: "js/screenshot/fullPage.js" }, function () {
+                    chrome.tabs.executeScript(tab.id, { code: "hideFixedElements();disableScroll();" }, function () {
+                        chrome.tabs.executeScript(tab.id, { code: "var x = {windowWidth: window.innerWidth, windowHeight: window.innerHeight, documentWidth: document.body.clientWidth, documentHeight: document.body.clientHeight}; x" }, function (response) {
+                            if (response && response[0]) {
+                                let windowWidth = response[0].windowWidth;
+                                let windowHeight = response[0].windowHeight;
+                                let documentWidth = response[0].documentWidth;
+                                let documentHeight = response[0].documentHeight;
+                                console.log("check this", windowWidth, documentWidth);
+                                var imageArray = [];
+                                //let fullPageImage = new Image();
+
+                                let fullPageCanvas = document.createElement('canvas');
+                                fullPageCanvas.id = "fullPageCanvas";
+                                let fullPageCTX = fullPageCanvas.getContext('2d');
+                                let maxSize = 32767;
+                                let maxArea = 268435456/8;
+                                //let maxArea = 268435456/3.5;
+                                fullPageCanvas.width = maxSize > documentWidth ? maxSize : documentWidth;
+                                fullPageCanvas.height = maxSize > documentHeight ? maxSize : documentHeight;
+                                var firstTime = true;
+                                if (/*windowWidth == documentWidth*/ true) {
+                                    if (documentHeight <= windowHeight) {
+                                        console.log("documentHeight <= windowHeight");
+                                        screenShot.captureVisiblePartAndUpload();
+                                    } else {
+                                        var height = 0;
+                                        var currentWindowTop = 0;
+                                        var ratio = 1;
+                                        function f() {
+                                            chrome.tabs.executeScript(tab.id, { code: "window.scrollTo(0, " + currentWindowTop + ")" }, function () {
+                                                function captureVisibleSigment() {
+                                                    chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (dataURI) {
+
+                                                        var img = new Image;
+
+                                                        img.src = dataURI;
+                                                        img.onload = function () {
+                                                            if (firstTime) {
+                                                                firstTime = false;
+                                                                ratio = (img.naturalHeight * 1.0) / windowHeight;
+                                                                fullPageCanvas.width = documentWidth * ratio;//fullPageCanvas.width > img.naturalWidth ? img.naturalWidth: fullPageCanvas.width;
+                                                                fullPageCanvas.height = Math.floor(maxArea / fullPageCanvas.width) <= documentHeight * ratio ? Math.floor(maxArea / fullPageCanvas.width) : documentHeight * ratio;
+                                                            }
+                                                            fullPageCTX.drawImage(img, 0, height);
+                                                            if (height < documentHeight * ratio && height + img.naturalHeight <= fullPageCanvas.height && height + img.naturalHeight <= maxSize) {
+                                                                if (height + img.naturalHeight <= documentHeight * ratio) {
+                                                                    height = height + img.naturalHeight;
+                                                                    currentWindowTop = currentWindowTop + windowHeight;
+                                                                } else {
+                                                                    height = (documentHeight * ratio) - img.naturalHeight;
+                                                                    currentWindowTop = documentHeight - windowHeight;
+                                                                }
+                                                                f();
+                                                            } else {
+                                                                tab["screenshot_timestamp"] = +new Date();
+                                                                chrome.tabs.executeScript(tab.id, { code: "unHideFixedElements();enableScroll();" }, function () {
+                                                                    screenShot.submitToCDA(fullPageCanvas.toDataURL(),JSON.stringify(tab));
+                                                                })
+
+                                                                /*
+                                                                screenShot.createBlob(fullPageCanvas, function (patch, blob) {
+                                                                    chrome.tabs.executeScript(tab.id, { code: "hideFixedElements();enableScroll();" }, function () {
+                                                                        chrome.tabs.create({ url: patch });
+                                                                    })
+                                                                });
+                                                                */
+                                                            }
+                                                        }
+
+                                                    })
+                                                }
+                                                setTimeout(captureVisibleSigment, 300);
+                                            });
+                                        }
+                                        f();
+                                    }
+                                } else {
+                                    console.log("width difference");
+                                }
+
+                            }
+                        });
+                    })
+                })
+            })
+
+
+        });
+    },
+
+    uploadToImageFromEditor: function () {
+        var img = localStorage.uploadToImageFromEditor;
+        var meta = localStorage.metaData;
+        var userGeneratedMeta = localStorage.userGeneratedMeta;
+        meta = JSON.parse(meta);
+        userGeneratedMeta = JSON.parse(userGeneratedMeta);
+        meta["userGeneratedMeta"] = userGeneratedMeta;
+        meta = JSON.stringify(meta);
+        if (img) {
             screenShot.submitToCDA(img, meta);
         }
     },
 
-    submitToCDA: function(img, meta){
-        chrome.tabs.query({ }, function (allTabsList) {
+    submitToCDA: function (img, meta) {
+        chrome.tabs.query({}, function (allTabsList) {
             let allTabs = allTabsList;
-            console.log("tabs",allTabs);
-            
-            for(var i = 0;i < allTabs.length;++i){
-                if(allTabs[i].url.includes(screenShot.citiCDAurl)){
-                    console.log("main tab",allTabs[i]);
-                    chrome.tabs.update(allTabs[i].id, {highlighted: true, active: true}, (tab) => {
-                        chrome.tabs.executeScript(tab.id, {file: "js/screenshot/submitImage.js"}, function (tab) {
-                            chrome.tabs.executeScript(tab.id, { code: "submitImageNow('"+img+"','"+meta+"')" }, function (response) {
+            console.log("tabs", allTabs);
+
+            for (var i = 0; i < allTabs.length; ++i) {
+                if (allTabs[i].url.includes(screenShot.citiCDAurl())) {
+                    console.log("main tab", allTabs[i]);
+                    chrome.tabs.update(allTabs[i].id, { highlighted: true, active: true }, (tab) => {
+                        chrome.tabs.executeScript(tab.id, { file: "js/screenshot/submitImage.js" }, function (tab) {
+
+                            chrome.tabs.executeScript(tab.id, { code: "submitImageNow('" + img + "','" + meta + "')" }, function (response) {
                             })
                         })
                     });
-                   
+
                     /*
                     chrome.tabs.sendMessage(allTabs[i].id, {greeting: "hello"}, function(response) {
                         console.log(response.farewell);
@@ -119,7 +233,7 @@ var screenShot = {
     },
 
     captureWindowAndUpload: function () {
-        screenShot.captureDesktop(function (canvas,meta) {
+        screenShot.captureDesktop(function (canvas, meta) {
             screenShot.createBlob(canvas, function () {
                 meta["screenshot_timestamp"] = +new Date();
                 var metaData = JSON.stringify(meta);
@@ -129,7 +243,7 @@ var screenShot = {
     },
 
     captureWindowAndEdit: function () {
-        screenShot.captureDesktop(function (canvas,meta) {
+        screenShot.captureDesktop(function (canvas, meta) {
             screenShot.createBlob(canvas, function () {
                 //console.log(canvas.toDataURL());
                 meta["screenshot_timestamp"] = +new Date();
@@ -165,7 +279,7 @@ var screenShot = {
                     this.pause();
                     this.remove();
                     canvas.remove();
-                    cb && cb(canvas,options);
+                    cb && cb(canvas, options);
                 }, false);
                 video.src = window.URL.createObjectURL(stream);
                 video.play();
@@ -212,19 +326,19 @@ var screenShot = {
                                 chrome.tabs.executeScript(tab.id, { code: "window.scrollTo(0, " + height + ")" }, function () {
                                     chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (dataURI) {
                                         var myCanvas = document.createElement('canvas');
-                                        
+
                                         var ctx = myCanvas.getContext('2d');
                                         var img = new Image;
-                                        
+
                                         img.src = dataURI;
-                                        img.onload = function(){
+                                        img.onload = function () {
                                             myCanvas.width = img.naturalWidth;
                                             myCanvas.height = img.naturalHeight;
-                                            ctx.drawImage(img,0,0);
-                                            
+                                            ctx.drawImage(img, 0, 0);
+
                                         }
-                                        
-                                        
+
+
                                         /*
                                         screenShot.createBlob(myCanvas, function (patch, blob) {
                                             console.log(patch, blob);

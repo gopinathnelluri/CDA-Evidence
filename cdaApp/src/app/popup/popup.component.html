@@ -96,7 +96,6 @@
       <tr>
         <td>
           <br/>
-          <br/>
         </td>
       </tr>
       <tr>
@@ -136,12 +135,11 @@
       <tr>
         <td>
           <br/>
-          <br/>
         </td>
       </tr>
       <tr>
         <td>
-          <button class="cutom-buttons" pButton type="button" (click)="captureWindowAndUpload()" icon="pi pi-pencil" label="Capture Window + Upload"></button>
+          <button class="cutom-buttons" pButton type="button" (click)="captureWindowAndUpload()" icon="pi pi-upload" label="Capture Window + Upload"></button>
         </td>
       </tr>
       <tr>
@@ -166,7 +164,7 @@
             <li>
               <div class="key">
                 <span>
-                  3
+                  5
                 </span>
               </div>
             </li>
@@ -175,7 +173,6 @@
       </tr>
       <tr>
         <td>
-          <br/>
           <br/>
         </td>
       </tr>
@@ -206,13 +203,60 @@
             <li>
               <div class="key">
                 <span>
-                  4
+                  7
                 </span>
               </div>
             </li>
           </ul>
         </td>
       </tr>
+      <tr>
+        <td>
+          <br/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button class="cutom-buttons" pButton type="button" (click)="captureFullPageAndUpload()" icon="pi pi-pencil" label="Capture FullPage + Upload"></button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <ul id="keys-freebie">
+            <li>
+              <div class="key special">
+                <span>
+                  ctrl
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key special">
+                <span>
+                  shift
+                </span>
+              </div>
+            </li>
+            <li class="concat_symbol">+</li>
+            <li>
+              <div class="key">
+                <span>
+                  8
+                </span>
+              </div>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <br/>
+        </td>
+      </tr>
+      <tr><td>
+        <p-checkbox binary="true" (onChange)="iframeModeChanged($event)" label="iFrame Mode" [(ngModel)]="iframeMode"></p-checkbox>
+      </td></tr>
     </table>
   </p-card>
 </div>

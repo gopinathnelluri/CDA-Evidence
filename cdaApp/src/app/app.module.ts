@@ -8,6 +8,7 @@ import { PopupComponent } from './popup/popup.component';
 import { AppRoutingModule } from './app-routing.module';
 import { PrimengModule } from './shared/primeng.module';
 import { EditComponent } from './edit/edit.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { EditComponent } from './edit/edit.component';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    PrimengModule
+    PrimengModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

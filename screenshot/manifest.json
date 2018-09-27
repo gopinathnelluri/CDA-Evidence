@@ -40,15 +40,15 @@
     "capture_window_and_upload": {
       "description": "Capture Window and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+3",
-        "mac": "Command+Shift+3"
+        "default": "Ctrl+Shift+5",
+        "mac": "Command+Shift+5"
       }
     },
     "capture_window_and_edit": {
       "description": "Capture Window and Edit",
       "suggested_key": {
-        "default": "Ctrl+Shift+4",
-        "mac": "Command+Shift+4"
+        "default": "Ctrl+Shift+7",
+        "mac": "Command+Shift+7"
       }
     }
   },
@@ -68,6 +68,8 @@
   "incognito": "spanning",
   "permissions": [
     "*://*/*",
+    "http://*/*",
+    "https://*/*",
     "cookies",
     "<all_urls>",
     "downloads",
@@ -85,9 +87,6 @@
   "update_url": "http://clients2.google.com/service/update2/crx",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "version": "1.0.0",
-  "externally_connectable": {
-    "matches": ["*://*/*"]
-  },
   "web_accessible_resources": [
     "favicon.png",
     "print.html",

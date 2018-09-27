@@ -7,12 +7,28 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PopupComponent implements OnInit {
   
+  iframeMode: boolean = false;
   constructor() {
     
   }
 
   ngOnInit() {
-   
+    console.log(localStorage.iframeMode);
+
+   if(localStorage.iframeMode != undefined && localStorage.iframeMode != null){
+    this.iframeMode = localStorage.iframeMode == "true" ? true : false;
+   } else {
+     localStorage.setItem("iframeMode", "false");
+   }
+  }
+
+  iframeModeChanged(event){
+    if(event){
+      localStorage.setItem("iframeMode", "true");
+    } else {
+      localStorage.setItem("iframeMode", "false");
+    }
+    console.log("check",localStorage.iframeMode);
   }
 
   captureVisiblePart(){
@@ -61,6 +77,14 @@ export class PopupComponent implements OnInit {
     (<any>chrome.extension).sendMessage({function: "captureFullPage"}, function(response) {
       if(response.success){
         console.log("captureFullPage");
+      }
+    });
+  }
+  
+  captureFullPageAndUpload(){
+    (<any>chrome.extension).sendMessage({function: "captureFullPageAndUpload"}, function(response) {
+      if(response.success){
+        console.log("captureFullPageAndUpload");
       }
     });
   }

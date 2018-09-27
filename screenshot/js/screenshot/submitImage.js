@@ -1,5 +1,5 @@
 function submitImageNow(img, meta){
-    console.log(meta);
+    console.log(img,meta);
     var div = document.createElement('div');
 
     div.className = 'upload-message-container';
@@ -11,8 +11,8 @@ function submitImageNow(img, meta){
         +"    <div style='color:#043f77!important;width:100%;text-align:center;border-bottom: 5px solid #043f77;margin-bottom: 5px;'>"
         +"        <h3 style='color:#043f77!important;'>CDA Evidence</h3>"
         +"    </div>"
-        +"    <div style='width:100%;'>"
-        +"    <img id='cda-evidence-image' style='width:100%;'/>"
+        +"    <div style='width:100%;background: #e4e4e4;'>"
+        +"    <img id='cda-evidence-image' style='display:block;margin-left:auto;margin-right:auto;max-width:100%;max-height:600px;'/>"
         +"    </div>"
         +"    <div style='width:100%;text-align:center;padding-top:20px;padding-bottom:20px;'>"
         +"        <b><p id='cda-upload-message'>uploading..!</p></b>"
@@ -72,6 +72,8 @@ function post(blob, div, meta){
         setTimeout( () => {
             if(document.getElementById("refreshImageList")){
                 document.getElementById("refreshImageList").click();
+            } else if(document.getElementById("cdaƒrame") && document.getElementById("cdaƒrame").contentWindow.document.getElementById("refreshImageList")){
+                document.getElementById("cdaƒrame").contentWindow.document.getElementById("refreshImageList").click();;
             }
             div.parentNode.removeChild(div);
         }, 2000);
