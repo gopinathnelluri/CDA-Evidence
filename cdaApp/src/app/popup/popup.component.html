@@ -58,7 +58,27 @@
       </ul>
     </div>
     -->
-    <table>
+    <div *ngIf="isCDAOpenFlag == undefined || isCDAOpenFlag == null"> 
+      <table>
+        <tr>
+          <td>
+              <b>Validatiing, Please wait..!</b>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="isCDAOpenFlag == false"> 
+        <table>
+          <tr>
+            <td>
+                <b>Please opean a case on CDA before Collecting Evidence</b>
+            </td>
+          </tr>
+        </table>
+    </div>
+
+    <table *ngIf="isCDAOpenFlag">
       <tr>
         <td>
           <button class="cutom-buttons" pButton type="button" (click)="captureVisiblePartAndUpload()" icon="pi pi-upload" label="ScreenShot + Upload"></button>
@@ -222,38 +242,12 @@
       </tr>
       <tr>
         <td>
-          <ul id="keys-freebie">
-            <li>
-              <div class="key special">
-                <span>
-                  ctrl
-                </span>
-              </div>
-            </li>
-            <li class="concat_symbol">+</li>
-            <li>
-              <div class="key special">
-                <span>
-                  shift
-                </span>
-              </div>
-            </li>
-            <li class="concat_symbol">+</li>
-            <li>
-              <div class="key">
-                <span>
-                  8
-                </span>
-              </div>
-            </li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td>
           <br/>
         </td>
       </tr>
+      </table>
+
+      <table>
       <tr><td>
         <p-checkbox binary="true" (onChange)="iframeModeChanged($event)" label="iFrame Mode" [(ngModel)]="iframeMode"></p-checkbox>
       </td></tr>

@@ -38,16 +38,43 @@ chrome.runtime.onMessage.addListener(
         } else if (request.function == "captureFullPageAndUpload") {
             screenShot.captureFullPageAndUpload();
             sendResponse({ success: true });
+        } else if (request.function == "isCDAOpen") {
+            screenShot.isCDAOpen(sendResponse);
+        } else if (request.function == "citiCDAurl") {
+            var cdaUrl;
+            cdaUrl = screenShot.citiCDAurl();
+            if(cdaUrl){
+                sendResponse({ success: true, cdaUrl: cdaUrl });
+            } else {
+                sendResponse({ success: false });
+            }
         }
     });
 
 var screenShot = {
     citiCDAurl: function () {
         if (localStorage.iframeMode == "true") {
+            localStorage.setItem("cdaUrl", "localhost:8080/cda");
             return "localhost:8080/cda";
         } else {
+            localStorage.setItem("cdaUrl", "localhost:4200");
             return "localhost:4200";
         }
+    },
+    isCDAOpen: function(sendResponse) {
+        chrome.tabs.query({}, function (allTabsList) {
+            let allTabs = allTabsList;
+            var check = false;
+            for (var i = 0; i < allTabs.length; ++i) {
+                if (allTabs[i].url.includes(screenShot.citiCDAurl())) {
+                    check = true;
+                    sendResponse({ success: true });
+                }
+            }
+            if(!check){
+                sendResponse({ success: false });
+            }
+        })
     },
     captureVisible: function () {
         chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
@@ -129,8 +156,9 @@ var screenShot = {
                                         console.log("documentHeight <= windowHeight");
                                         screenShot.captureVisiblePartAndUpload();
                                     } else {
-                                        var height = 0;
+                                        var currentDocumentTop = 0;
                                         var currentWindowTop = 0;
+
                                         var ratio = 1;
                                         function f() {
                                             chrome.tabs.executeScript(tab.id, { code: "window.scrollTo(0, " + currentWindowTop + ")" }, function () {
@@ -138,6 +166,7 @@ var screenShot = {
                                                     chrome.tabs.captureVisibleTab(null, { format: localStorage.format === 'jpg' ? 'jpeg' : 'png', quality: 100 }, function (dataURI) {
 
                                                         var img = new Image;
+                                                        
 
                                                         img.src = dataURI;
                                                         img.onload = function () {
@@ -147,13 +176,13 @@ var screenShot = {
                                                                 fullPageCanvas.width = documentWidth * ratio;//fullPageCanvas.width > img.naturalWidth ? img.naturalWidth: fullPageCanvas.width;
                                                                 fullPageCanvas.height = Math.floor(maxArea / fullPageCanvas.width) <= documentHeight * ratio ? Math.floor(maxArea / fullPageCanvas.width) : documentHeight * ratio;
                                                             }
-                                                            fullPageCTX.drawImage(img, 0, height);
-                                                            if (height < documentHeight * ratio && height + img.naturalHeight <= fullPageCanvas.height && height + img.naturalHeight <= maxSize) {
-                                                                if (height + img.naturalHeight <= documentHeight * ratio) {
-                                                                    height = height + img.naturalHeight;
+                                                            fullPageCTX.drawImage(img, 0, currentDocumentTop);
+                                                            if ((currentDocumentTop + img.naturalHeight) < (documentHeight * ratio) && (currentDocumentTop + img.naturalHeight) <= fullPageCanvas.height && (currentDocumentTop + img.naturalHeight) <= maxSize) {
+                                                                if ((currentDocumentTop + 2*(img.naturalHeight)) <= (documentHeight * ratio)) {
+                                                                    currentDocumentTop = currentDocumentTop + img.naturalHeight;
                                                                     currentWindowTop = currentWindowTop + windowHeight;
                                                                 } else {
-                                                                    height = (documentHeight * ratio) - img.naturalHeight;
+                                                                    currentDocumentTop = (documentHeight * ratio) - img.naturalHeight;
                                                                     currentWindowTop = documentHeight - windowHeight;
                                                                 }
                                                                 f();
