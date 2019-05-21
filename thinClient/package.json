@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "electron ."
+    "start": "npm run --prefix dev build && electron ."
   },
   "author": "",
   "license": "ISC",

@@ -8,6 +8,7 @@ const { app, BrowserWindow, globalShortcut, Tray, Menu } = electron;
 var iconpath = path.join(__dirname, 'new.png')
 
 let mainWindow;
+var appIcon;
 
 let isQuiting = false;
 
@@ -17,27 +18,23 @@ app.on('before-quit', function () {
 
 
 app.on("ready", () => {
-    var appIcon = new Tray(iconpath)
-
+    trayMenuSetup();
     mainWindow = new BrowserWindow({});
-    mainWindow.loadURL("https://google.com");
+    mainWindow.loadURL(
+        url.format({
+            pathname: path.join(__dirname, `/ui/index.html`),
+            protocol: "file:",
+            slashes: true
+          })
+    );
+    
 
-    var contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show App', click: function () {
-                mainWindow.show()
-            }
-        },
-        {
-            label: 'Quit', click: function () {
-                app.isQuiting = true
-                app.quit();
-            }
-        }
-    ])
+    windowMenuSetup();
 
-    appIcon.setContextMenu(contextMenu)
+    registerGlobalShortCuts();
+});
 
+function windowMenuSetup() {
     mainWindow.on('close', function (event) {
         if (!isQuiting) {
             event.preventDefault();
@@ -53,13 +50,30 @@ app.on("ready", () => {
 
     mainWindow.on('show', function () {
         appIcon.setHighlightMode('always')
-    })
+    });
+}
 
-    registerGlobalShortCuts();
-});
+function trayMenuSetup() {
+    appIcon = new Tray(iconpath);
 
+    var contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Show App', click: function () {
+                mainWindow.show()
+            }
+        },
+        {
+            label: 'Quit', click: function () {
+                app.isQuiting = true
+                app.quit();
+            }
+        }
+    ])
+
+    appIcon.setContextMenu(contextMenu);
+}
 function registerGlobalShortCuts() {
-    globalShortcut.register('CommandOrControl+X', () => {
+    globalShortcut.register('CommandOrControl+T', () => {
         console.log('CommandOrControl+X is pressed')
     })
 }
